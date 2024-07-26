@@ -1,4 +1,3 @@
-import { CosmosClient } from '@azure/cosmos';
 import { ApolloServer, gql } from 'apollo-server';
 import { ulid } from 'ulid';
 
