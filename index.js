@@ -105,7 +105,10 @@ const resolvers = {
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: () => ({ containers })
+    cors: {
+        origin: '*',
+        credentials: true
+    }
 });
 
 server.listen(8080).then(({ url }) => {
