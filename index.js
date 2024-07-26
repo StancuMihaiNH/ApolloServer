@@ -1,8 +1,6 @@
 import { CosmosClient } from '@azure/cosmos';
 import { ApolloServer, gql } from 'apollo-server';
 import { ulid } from 'ulid';
-import KeyVaultManager from './keyVaultManager.js';
-import cors from 'cors';
 
 const typeDefs = gql`
 type Tag {
@@ -105,33 +103,12 @@ const resolvers = {
     }
 };
 
-const init = async () => {
-    const kvManager = KeyVaultManager.getInstance();
-    const cosmosDbEndpoint = await kvManager.getSecret('cosmosDbEndpoint');
-    const cosmosDbKey = await kvManager.getSecret('cosmosDbKey');
-    const client = new CosmosClient({
-        endpoint: cosmosDbEndpoint,
-        key: cosmosDbKey
-    });
-    const database = client.database('NHChat');
-    const tagContainer = database.container('Tag');
-    const topicContainer = database.container('Topic');
+const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: () => ({ containers })
+});
 
-    const containers = { tagContainer, topicContainer };
-
-    const server = new ApolloServer({
-        typeDefs,
-        resolvers,
-        context: () => ({ containers }),
-        cors: {
-            origin: '*',
-            credentials: true
-        }
-    });
-
-    server.listen(8080).then(({ url }) => {
-        console.log(`Server ready at ${url}`);
-    });
-};
-
-init().catch((error) => console.error(error));
+server.listen(8080).then(({ url }) => {
+    console.log(`Server ready at ${url}`);
+});
