@@ -2,6 +2,7 @@ import { CosmosClient } from '@azure/cosmos';
 import { ApolloServer, gql } from 'apollo-server';
 import { ulid } from 'ulid';
 import KeyVaultManager from './keyVaultManager.js';
+import cors from 'cors';
 
 const typeDefs = gql`
 type Tag {
@@ -121,7 +122,11 @@ const init = async () => {
     const server = new ApolloServer({
         typeDefs,
         resolvers,
-        context: () => ({ containers })
+        context: () => ({ containers }),
+        cors: {
+            origin: '*',
+            credentials: true
+        }
     });
 
     server.listen(8080).then(({ url }) => {
